@@ -1,9 +1,11 @@
 function Set() {
 
   this.intersection = function (listA, listB) {
+    // Return if null values exist
     if (listA === null || listB === null) {
       return null
     }
+    //calculate the result list
     var resultList = [];
     listA.forEach(function (eachA) {
       listB.forEach(function (eachB) {
@@ -16,9 +18,11 @@ function Set() {
   }
 
   this.union = function (listA, listB) {
+    // Return if null values exist
     if (listA === null || listB === null) {
       return null
     }
+    //calculate the result list
     var resultList = [];
     resultList.push.apply(resultList, this.relativeComplement(listA, listB))
     resultList.push.apply(resultList, this.intersection(listA, listB))
@@ -27,9 +31,11 @@ function Set() {
   }
 
   this.relativeComplement = function (listA, listB) {
+    // Return if null values exist
     if (listA === null || listB === null) {
       return null
     }
+    //calculate the result list
     var resultList = [];
     listA.forEach(function (eachA) {
       var skip = false
@@ -46,9 +52,11 @@ function Set() {
   }
 
   this.symmetricDifference = function (listA, listB) {
+    // Return if null values exist
     if (listA === null || listB === null) {
       return null
     }
+    //calculate the result list
     var resultList = [];
     resultList.push.apply(resultList, this.relativeComplement(listA, listB))
     resultList.push.apply(resultList, this.relativeComplement(listB, listA))
