@@ -1,13 +1,16 @@
+import {Injectable} from '@angular/core';
+
+@Injectable()
 export class Contact{
-  public contactId: number;
+  public id: string;
   public name: string;
   public email: string;
   public phone: string;
   public imageUrl: string;
   public group: Contact[];
   
-  constructor(contactId, name, email, phone, imageUrl, group){
-    this.contactId = contactId;
+  constructor(id, name, email, phone, imageUrl, group){
+    this.id = id;
     this.name = name;
     this.email = email;
     this.phone = phone;
