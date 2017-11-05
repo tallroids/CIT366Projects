@@ -15,10 +15,8 @@ export class DocumentListComponent implements OnInit {
   }
 
   ngOnInit() {
-  }
-  
-  onSelectedDocument(document: Document){
-    this.DocumentsService.documentSelectedEvent.emit(document)
+    this.DocumentsService.documentChangedEvent.subscribe(
+    (documents: Document[]) => {this.documents = documents});
   }
 
 }

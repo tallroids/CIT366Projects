@@ -1,11 +1,11 @@
 <div class="panel panel-default">
   <div class="panel-heading clearfix">
     <h4 class="panel-title"><strong>{{selectedContact?.name}}</strong></h4>
-      <img src="{{ selectedContact?.imageUrl }}" alt="{{ selectedContact?.name }}" class="img-responsive pull-left" style="max-height: 50px;">
-      <div class="pull-right align-middle">
-        <button class="btn btn-success">Delete</button>
-        <button class="btn btn-success">Edit</button>
-      </div>
+    <img src="{{ selectedContact?.imageUrl }}" alt="{{ selectedContact?.name }}" class="img-responsive pull-left" style="max-height: 50px;">
+    <div class="pull-right align-middle">
+      <a (click)="onDelete()" class="btn btn-success">Delete</a>
+      <a routerLink="edit" class="btn btn-success">Edit</a>
+    </div>
   </div>
   <div class="panel-body">
     <p><strong>Email:</strong>{{selectedContact?.email}}</p>
