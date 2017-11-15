@@ -25,6 +25,7 @@ import { AppRoutingModule } from './app-routing';
 import { DocumentViewComponent } from './documents/document-view/document-view.component';
 import { DocumentEditComponent } from './documents/document-view/document-edit/document-edit.component';
 import { WindRefService } from './wind-ref.service';
+import { DndModule } from 'ng2-dnd';
 
 @NgModule({
   declarations: [
@@ -52,6 +53,7 @@ import { WindRefService } from './wind-ref.service';
     FormsModule,
     HttpModule,
     AppRoutingModule,
+    DndModule.forRoot(),
   ],
   providers: [
     ContactService,

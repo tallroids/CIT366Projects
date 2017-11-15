@@ -10,5 +10,16 @@
   <div class="panel-body">
     <p><strong>Email:</strong>{{selectedContact?.email}}</p>
     <p><strong>Phone:</strong>{{selectedContact?.phone}}</p>
+    <p *ngIf="selectedContact.group"><strong>Contacts in team</strong></p>
+    <div *ngFor="let contact of selectedContact?.group; let i = index">
+      <a routerLink="{{contact.id}}" routerLinkActive="active" class="list-group-item clearfix">
+        <div class="pull-left">
+          <h4 class="list-group-item-heading">{{ contact.name }}</h4>
+        </div>
+        <span class="pull-right">
+        <img src="{{ contact.imageUrl }}" alt="{{ contact.name }}" class="img-responsive" style="max-height: 50px;">
+      </span>
+      </a>
+    </div>
   </div>
 </div>
