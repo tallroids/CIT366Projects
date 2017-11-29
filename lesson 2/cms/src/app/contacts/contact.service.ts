@@ -1,22 +1,38 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { Contact } from './contact.model';
-import { MOCKCONTACTS } from './MOCKCONTACTS';
 import { Subject } from 'rxjs/Subject'
+import { Http, Response, Headers } from '@angular/http';
+import 'rxjs/Rx';
+
 @Injectable()
 export class ContactService {
   contactSelectedEvent = new EventEmitter<Contact>();
-  contacts: Contact[];
-  currentContact: Contact = null;
+  contacts: Contact[] = [];
   contactListChangedEvent = new Subject<Contact[]>();
   maxContactId: number;
   
-  constructor() { 
-    this.contacts = MOCKCONTACTS;
-    this.contacts = this.contacts.sort(this.compareNames)
-    this.currentContact = this.getContact("?");
+  constructor(private http: Http) { 
+    this.initContacts();
+  }
+  
+  initContacts(){
+    this.http.get('https://cms-f0a74.firebaseio.com/contacts.json').map(
+        (response: Response) => {
+          const contacts: Contact[] = response.json();
+          return contacts;
+        }
+      )
+      .subscribe(
+        (contacts: Contact[]) => {
+          this.contacts = contacts;
+//          this.contacts = this.contacts.sort(this.compareNames)
+          this.maxContactId = this.getMaxId();
+          this.contactListChangedEvent.next(contacts.slice())
+        }
+      )
   }
 
-  getContacts(){
+  getContacts(): Contact[]{
     return this.contacts.slice();
   }
   
@@ -44,8 +60,7 @@ export class ContactService {
     this.maxContactId++;
     newContact.id = this.maxContactId.toString();
     this.contacts.push(newContact);
-    const contactsListClone = this.contacts.slice();
-    this.contactListChangedEvent.next(contactsListClone);
+    this.storeContacts();
   }
   
   updateContact(originalContact: Contact, newContact: Contact){
@@ -60,8 +75,7 @@ export class ContactService {
     
     newContact.id = originalContact.id;
     this.contacts[pos] = newContact;
-    const contactsListClone = this.contacts.slice();
-    this.contactListChangedEvent.next(contactsListClone)
+    this.storeContacts()
   }
   
   deleteContact(contact: Contact){
@@ -75,8 +89,17 @@ export class ContactService {
     }
 
     this.contacts.splice(pos, 1);
-    const contactsListClone = this.contacts.slice();
-    this.contactListChangedEvent.next(contactsListClone)
+    this.storeContacts();
+  }
+  
+  storeContacts(){
+    const contactString = JSON.stringify(this.contacts.slice())
+    let headers = new Headers({'Content-type':'application/json'});
+    this.http.put('https://cms-f0a74.firebaseio.com/contacts.json', contactString, {headers: headers})
+      .subscribe(
+        ()=>{
+          this.contactListChangedEvent.next(this.contacts.slice())
+        })
   }
   
   getMaxId():number{

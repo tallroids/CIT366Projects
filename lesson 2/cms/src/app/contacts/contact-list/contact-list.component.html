@@ -1,9 +1,25 @@
 <div class="panel panel-default">
-  <div class="panel-heading clearfix">
-    <h4 class="panel-title pull-left"><strong>Contacts</strong></h4>
-    <button routerLink="new" class="btn btn-success pull-right">New Contact</button>
+
+  <div class="panel-heading">
+    <div>
+      <h4 class="panel-title"><strong>Contacts</strong></h4>
+    </div>
+    <div class="clearfix">
+      <div class="input-group pull-left pad-left-right col-xs-7">
+        <input class="form-control" type="search" #searchBox (keypress)="onKeyPress(searchBox.value)" placeholder="Enter search value">
+        <div class="glyphicon glyphicon glyphicon-search input-group-addon" (click)="search(searchBox.value)"></div>
+      </div>
+      <div class="pull-right pad-left-right">
+        <a class="btn btn-success" [routerLink]="['new']">New Contact</a>
+      </div>
+    </div>
   </div>
+
   <div class="panel-body">
-    <cms-contact-item dnd-draggable [dragEnabled]="true" [dragData]="contactEl" [dropZones]="['contactGroup']" *ngFor="let contactEl of contacts" [contact]="contactEl"></cms-contact-item>
+    <cms-contact-item dnd-draggable [dragEnabled]="true" [dragData]="contactEl" [dropZones]="['contactGroup']" *ngFor="let contactEl of contacts | contactsFilter:term" [contact]="contactEl"></cms-contact-item>
   </div>
 </div>
+<!--
+<div class="panel-heading clearfix">
+    <button routerLink="new" class="btn btn-success pull-right">New Contact</button>
+  </div>-->
