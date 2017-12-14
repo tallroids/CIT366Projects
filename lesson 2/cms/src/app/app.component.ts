@@ -9,6 +9,7 @@ import { ContactService } from './contacts/contact.service';
 
 
 export class AppComponent {
-constructor(private contactService:ContactService){}
-  
+constructor(private contactService:ContactService){
+  contactService.initContacts();
+}
 }

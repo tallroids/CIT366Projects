@@ -31,21 +31,19 @@ export class DocumentEditComponent implements OnInit {
                 this.document = JSON.parse(JSON.stringify(this.originalDocument));
               }
           }
-          
         }
       );
   }
-  
+
   onSubmit(form) {
     const values = form.value;
-    console.log(values)
     const newDocument = new Document( null, values.documentTitle, values.documentDescription, values.documentUrl, null);
     if (this.editMode) {
       this.documentsService.updateDocument(this.originalDocument, newDocument);
-      this.router.navigate(['/documents/' + this.originalDocument.id]);
+      this.router.navigate(['/documents']);
     } else {
       this.documentsService.addDocument(newDocument);
-      this.router.navigate(['/documents/' + this.documentsService.getMaxId()]);
+      this.router.navigate(['/documents']);
     }
   }
   

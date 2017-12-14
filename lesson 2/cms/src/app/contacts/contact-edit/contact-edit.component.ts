@@ -52,7 +52,7 @@ export class ContactEditComponent implements OnInit {
     } else {
       this.contactService.addContact(newContact);
     }
-    this.router.navigate(['/contacts/' + this.contactService.getMaxId()])
+    this.router.navigate(['/contacts'])
   }
   
   onCancel(){

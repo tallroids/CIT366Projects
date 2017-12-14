@@ -1,6 +1,5 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import { Message } from './message.model';
-//import { MOCKMESSAGES } from './MOCKMESSAGES';
 import { Http, Response, Headers } from '@angular/http';
 import 'rxjs/Rx';
 
@@ -9,13 +8,13 @@ export class MessageService {
   messages: Message[] = [];
   messageChangeEvent = new EventEmitter<Message[]>();
   maxMessageId: number;
-  
+
   constructor(private http: Http) {
   this.initMessages();
   }
-  
-  initMessages(){
-    this.http.get('https://cms-f0a74.firebaseio.com/messages.json')
+
+  initMessages() {
+    this.http.get('http://localhost:3000/messages')
       .map(
         (response: Response) => {
           const messages: Message[] = response.json();
@@ -31,16 +30,6 @@ export class MessageService {
       );
   }
   
-  storeMessages(){
-    const messageString = JSON.stringify(this.messages.slice())
-    let headers = new Headers({'Content-type':'application/json'});
-    this.http.put('https://cms-f0a74.firebaseio.com/messages.json', messageString, {headers: headers})
-      .subscribe(
-        ()=>{
-          this.messageChangeEvent.next(this.messages.slice())
-        })
-  }
-  
   getMessages(): Message[]{
     return this.messages.slice();
   }
@@ -54,10 +43,27 @@ export class MessageService {
   }
   
   addMessage(message: Message){
-    this.messages.push(message);
-    this.storeMessages();
+    if(!message){
+      return
+    }
+    
+    const headers = new Headers({
+      'Content-Type': 'application/json'
+    });
+    
+    message.id = '';
+    const strMessage = JSON.stringify(message);
+    
+    this.http.post('http://localhost:3000/messages', strMessage, {headers: headers})
+    .map((response: Response) => {
+      return response.json()
+    })
+    .subscribe((messages: Message[]) => {
+      this.messages = messages;
+      this.messageChangeEvent.next(this.messages.slice())
+    })
   }
-  
+
   getMaxId(){
     let maxId = 0;
     this.messages.forEach(function(message){

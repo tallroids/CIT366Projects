@@ -16,7 +16,7 @@ export class DocumentsService {
   }
   
   initDocuments(){
-    this.http.get('https://cms-f0a74.firebaseio.com/documents.json')
+    this.http.get('http://localhost:3000/documents')
       .map(
         (response: Response) => {
           const documents: Document[] = response.json();
@@ -57,10 +57,21 @@ export class DocumentsService {
       return
     }
     
-    this.maxDocumentId++;
-    newDocument.id = this.maxDocumentId.toString();
-    this.documents.push(newDocument);
-    this.storeDocuments();
+    const headers = new Headers({
+      'Content-Type': 'application/json'
+    });
+    
+    newDocument.id = '';
+    const strDocument = JSON.stringify(newDocument);
+    
+    this.http.post('http://localhost:3000/documents', strDocument, {headers: headers})
+    .map((response: Response) => {
+      return response.json()
+    })
+    .subscribe((documents: Document[]) => {
+      this.documents = documents;
+      this.documentListChangedEvent.next(this.documents.slice())
+    })
   }
   
   updateDocument(originalDocument: Document, newDocument: Document){
@@ -73,19 +84,20 @@ export class DocumentsService {
       return
     }
     
-    newDocument.id = originalDocument.id;
-    this.documents[pos] = newDocument;
-    this.storeDocuments();
-  }
-  
-  storeDocuments(){
-    const documentString = JSON.stringify(this.documents.slice())
-    let headers = new Headers({'Content-type':'application/json'});
-    this.http.put('https://cms-f0a74.firebaseio.com/documents.json', documentString, {headers: headers})
-      .subscribe(
-        ()=>{
-          this.documentListChangedEvent.next(this.documents.slice())
-        })
+    const headers = new Headers({
+      'Content-Type': 'application/json'
+    });
+    
+    const strDocument = JSON.stringify(newDocument);
+    
+    this.http.patch('http://localhost:3000/documents/' + originalDocument.id, strDocument, {headers: headers})
+    .map((response: Response) => {
+      return response.json()
+    })
+    .subscribe((documents: Document[]) => {
+      this.documents = documents;
+      this.documentListChangedEvent.next(this.documents.slice())
+    })
   }
   
   deleteDocument(document: Document){
@@ -93,13 +105,14 @@ export class DocumentsService {
       return;
     }
     
-    const pos = this.documents.indexOf(document);
-    if (pos < 0) {
-      return;
-    }
-
-    this.documents.splice(pos, 1);
-    this.storeDocuments();
+    this.http.delete('http://localhost:3000/documents/' + document.id)
+    .map((response: Response) => {
+      return response.json()
+    })
+    .subscribe((documents: Document[]) => {
+      this.documents = documents;
+      this.documentListChangedEvent.next(this.documents.slice())
+    })
   }
   
   getMaxId():number{

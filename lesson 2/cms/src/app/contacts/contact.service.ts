@@ -16,7 +16,7 @@ export class ContactService {
   }
   
   initContacts(){
-    this.http.get('https://cms-f0a74.firebaseio.com/contacts.json').map(
+    this.http.get('http://localhost:3000/contacts').map(
         (response: Response) => {
           const contacts: Contact[] = response.json();
           return contacts;
@@ -57,10 +57,21 @@ export class ContactService {
       return
     }
     
-    this.maxContactId++;
-    newContact.id = this.maxContactId.toString();
-    this.contacts.push(newContact);
-    this.storeContacts();
+    const headers = new Headers({
+      'Content-Type': 'application/json'
+    });
+    
+    newContact.id = '';
+    const strContact = JSON.stringify(newContact);
+    
+    this.http.post('http://localhost:3000/contacts', strContact, {headers: headers})
+    .map((response: Response) => {
+      return response.json()
+    })
+    .subscribe((contacts: Contact[]) => {
+      this.contacts = contacts;
+      this.contactListChangedEvent.next(this.contacts.slice())
+    })
   }
   
   updateContact(originalContact: Contact, newContact: Contact){
@@ -73,9 +84,20 @@ export class ContactService {
       return
     }
     
-    newContact.id = originalContact.id;
-    this.contacts[pos] = newContact;
-    this.storeContacts()
+    const headers = new Headers({
+      'Content-Type': 'application/json'
+    });
+    
+    const strContact = JSON.stringify(newContact);
+    
+    this.http.patch('http://localhost:3000/contacts/' + originalContact.id, strContact, {headers: headers})
+    .map((response: Response) => {
+      return response.json()
+    })
+    .subscribe((contacts: Contact[]) => {
+      this.contacts = contacts;
+      this.contactListChangedEvent.next(this.contacts.slice())
+    })
   }
   
   deleteContact(contact: Contact){
@@ -83,23 +105,14 @@ export class ContactService {
       return;
     }
     
-    const pos = this.contacts.indexOf(contact);
-    if (pos < 0) {
-      return;
-    }
-
-    this.contacts.splice(pos, 1);
-    this.storeContacts();
-  }
-  
-  storeContacts(){
-    const contactString = JSON.stringify(this.contacts.slice())
-    let headers = new Headers({'Content-type':'application/json'});
-    this.http.put('https://cms-f0a74.firebaseio.com/contacts.json', contactString, {headers: headers})
-      .subscribe(
-        ()=>{
-          this.contactListChangedEvent.next(this.contacts.slice())
-        })
+    this.http.delete('http://localhost:3000/contacts/' + contact.id)
+    .map((response: Response) => {
+      return response.json()
+    })
+    .subscribe((contacts: Contact[]) => {
+      this.contacts = contacts;
+      this.contactListChangedEvent.next(this.contacts.slice())
+    })
   }
   
   getMaxId():number{
